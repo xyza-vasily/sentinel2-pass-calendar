@@ -15,6 +15,8 @@
     --day-text: #04342C;
     --night-color: #B4B2A9;
     --night-text: #2C2C2A;
+    --drill-color: #F97316;
+    --drill-text: #FFFFFF;
     --radius: 8px;
   }
   @media (prefers-color-scheme: dark) {
@@ -28,6 +30,8 @@
       --day-text: #04342C;
       --night-color: #5F5E5A;
       --night-text: #F1EFE8;
+      --drill-color: #FB923C;
+      --drill-text: #FFFFFF;
     }
   }
   * { box-sizing: border-box; }
@@ -35,7 +39,7 @@
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
     background: var(--bg);
     color: var(--text);
-    max-width: 480px;
+    max-width: 520px;
     margin: 0 auto;
     padding: 24px 16px 48px;
   }
@@ -53,26 +57,80 @@
   #monthLabel { font-size: 18px; font-weight: 500; }
   .legend { display: flex; gap: 16px; margin-bottom: 12px; font-size: 12px; color: var(--text-secondary); flex-wrap: wrap; }
   .legend span { display: flex; align-items: center; gap: 4px; }
-  .swatch { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+  .swatch { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
   #grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
   .dayname { font-size: 12px; color: var(--text-muted); text-align: center; padding: 4px 0; }
   .cell {
     aspect-ratio: 1; border-radius: var(--radius); font-size: 13px;
     border: 0.5px solid var(--border); background: transparent;
     color: var(--text); padding: 0; cursor: default;
+    position: relative;
+    overflow: hidden;
   }
   .cell.has-day { background: var(--day-color); color: var(--day-text); border-color: transparent; cursor: pointer; font-weight: 500; }
   .cell.has-night-only { background: var(--night-color); color: var(--night-text); border-color: transparent; cursor: pointer; font-weight: 500; }
-  .cell.empty { border: none; cursor: default; }
-  #detail { margin-top: 16px; min-height: 60px; font-size: 13px; color: var(--text-secondary); border-top: 0.5px solid var(--border); padding-top: 12px; }
-  #detail .row { margin-bottom: 4px; }
+  .cell.has-drill { background: var(--drill-color); color: var(--drill-text); border-color: transparent; cursor: pointer; font-weight: 500; }
+  
+  /* Diagonal split for days with both Sentinel pass AND Drill & Drop */
+  .cell.split-day-drill {
+    background: linear-gradient(135deg, var(--day-color) 50%, var(--drill-color) 50%);
+    color: var(--day-text);
+    border-color: transparent;
+    cursor: pointer;
+    font-weight: 500;
+  }
+  .cell.split-night-drill {
+    background: linear-gradient(135deg, var(--night-color) 50%, var(--drill-color) 50%);
+    color: var(--night-text);
+    border-color: transparent;
+    cursor: pointer;
+    font-weight: 500;
+  }
+  /* Small label inside the cell */
+  .cell .badge {
+    position: absolute;
+    font-size: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    opacity: 0.7;
+  }
+  .cell .badge-drill {
+    bottom: 2px;
+    right: 3px;
+    color: var(--drill-text);
+  }
+  .cell .badge-sentinel {
+    top: 2px;
+    left: 3px;
+  }
+  
+  .cell.empty { border: none; cursor: default; background: transparent !important; }
+  #detail { 
+    margin-top: 16px; 
+    min-height: 60px; 
+    font-size: 13px; 
+    color: var(--text-secondary); 
+    border-top: 0.5px solid var(--border); 
+    padding-top: 12px; 
+  }
+  #detail .row { margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
   #detail .row .time { font-weight: 500; color: var(--text); }
+  #detail .dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+  .dot-sentinel-day { background: var(--day-color); }
+  .dot-sentinel-night { background: var(--night-color); }
+  .dot-drill { background: var(--drill-color); }
   footer { margin-top: 32px; font-size: 12px; color: var(--text-muted); border-top: 0.5px solid var(--border); padding-top: 16px; }
 </style>
 </head>
 <body>
 
-<h1>Sentinel-2 pass calendar</h1>
+<h1>🛰️ Sentinel-2 + Drill & Drop Calendar</h1>
 <p class="subtitle">__LOCATION_LABEL__ &middot; times shown in __LOCAL_TZ__</p>
 <p class="updated">Last updated __GENERATED_AT__ &middot; refreshes automatically every 10 days</p>
 
@@ -83,25 +141,26 @@
 </div>
 
 <div class="legend">
-  <span><span class="swatch" style="background:#1D9E75;"></span>Daytime pass (imaging)</span>
-  <span><span class="swatch" style="background:#B4B2A9;"></span>Nighttime pass (no imaging)</span>
+  <span><span class="swatch" style="background:#1D9E75;"></span>Daytime pass</span>
+  <span><span class="swatch" style="background:#B4B2A9;"></span>Nighttime pass</span>
+  <span><span class="swatch" style="background:#F97316;"></span>Drill & Drop Reading</span>
 </div>
 
 <div id="grid"></div>
 
-<div id="detail">Select a highlighted day to see pass times.</div>
+<div id="detail">Select a highlighted day to see events.</div>
 
 <footer>
-  Computed by propagating current Sentinel-2A / 2B orbital elements (SGP4, sourced from CelesTrak) forward one year and finding when the ground track passes within the ~290&nbsp;km imaging swath of this location.
+  Sentinel-2 data from CelesTrak &middot; Drill & Drop readings every 2 weeks on Friday
 </footer>
 
 <script>
-const passes = __PASSES_JSON__;
+const events = __PASSES_JSON__;
 
 const byDate = {};
-passes.forEach(p => {
-  if (!byDate[p.date]) byDate[p.date] = [];
-  byDate[p.date].push(p);
+events.forEach(e => {
+  if (!byDate[e.date]) byDate[e.date] = [];
+  byDate[e.date].push(e);
 });
 
 const dates = Object.keys(byDate).sort();
@@ -124,6 +183,12 @@ const dayNames = ['Mo','Tu','We','Th','Fr','Sa','Su'];
 
 function pad(n) { return n < 10 ? '0' + n : '' + n; }
 
+function getEventLabel(e) {
+  if (e.type === 'drill_drop') return '🔶 Drill & Drop';
+  if (e.type === 'day') return `🛰️ Sentinel-${e.sat} at ${e.time} (daytime)`;
+  return `🛰️ Sentinel-${e.sat} at ${e.time} (nighttime)`;
+}
+
 function render() {
   const d = months[idx];
   const year = d.getFullYear();
@@ -132,35 +197,70 @@ function render() {
   prevBtn.disabled = idx === 0;
   nextBtn.disabled = idx === months.length - 1;
   grid.innerHTML = '';
+  
   dayNames.forEach(dn => {
     const el = document.createElement('div');
     el.className = 'dayname';
     el.textContent = dn;
     grid.appendChild(el);
   });
+  
   const firstDay = new Date(year, month, 1);
   let startOffset = firstDay.getDay() - 1;
   if (startOffset < 0) startOffset = 6;
   const daysInMonth = new Date(year, month + 1, 0).getDate();
+  
   for (let i = 0; i < startOffset; i++) {
     const empty = document.createElement('div');
     empty.className = 'cell empty';
     grid.appendChild(empty);
   }
+  
   for (let day = 1; day <= daysInMonth; day++) {
     const dateStr = `${year}-${pad(month+1)}-${pad(day)}`;
     const cell = document.createElement('button');
     cell.type = 'button';
     cell.className = 'cell';
     cell.textContent = day;
-    const dayPasses = byDate[dateStr];
-    if (dayPasses) {
-      const hasDay = dayPasses.some(p => p.type === 'day');
-      cell.classList.add(hasDay ? 'has-day' : 'has-night-only');
+    
+    const dayEvents = byDate[dateStr] || [];
+    const hasSentinel = dayEvents.some(e => e.type === 'day' || e.type === 'night');
+    const hasDrill = dayEvents.some(e => e.type === 'drill_drop');
+    
+    if (hasSentinel || hasDrill) {
+      let cls = '';
+      if (hasSentinel && hasDrill) {
+        // Diagonal split
+        const hasDay = dayEvents.some(e => e.type === 'day');
+        cls = hasDay ? 'split-day-drill' : 'split-night-drill';
+      } else if (hasDrill) {
+        cls = 'has-drill';
+      } else if (hasSentinel) {
+        const hasDay = dayEvents.some(e => e.type === 'day');
+        cls = hasDay ? 'has-day' : 'has-night-only';
+      }
+      cell.className = `cell ${cls}`;
+      cell.style.cursor = 'pointer';
+      
+      // Add small badges
+      if (hasSentinel && hasDrill) {
+        // Add "D&D" badge on the orange side
+        const badge = document.createElement('span');
+        badge.className = 'badge badge-drill';
+        badge.textContent = 'D&D';
+        cell.appendChild(badge);
+      } else if (hasDrill) {
+        const badge = document.createElement('span');
+        badge.className = 'badge badge-drill';
+        badge.textContent = 'D&D';
+        cell.appendChild(badge);
+      }
+      
       cell.addEventListener('click', () => {
-        detail.innerHTML = dayPasses.map(p => {
-          const label = p.type === 'day' ? 'daytime, imaging' : 'nighttime, no imaging';
-          return `<div class="row"><span class="time">${dateStr} ${p.time}</span> &mdash; Sentinel-${p.sat} (${label})</div>`;
+        detail.innerHTML = dayEvents.map(e => {
+          const dotColor = e.type === 'drill_drop' ? 'var(--drill-color)' : 
+                           e.type === 'day' ? 'var(--day-color)' : 'var(--night-color)';
+          return `<div class="row"><span class="dot" style="background:${dotColor};"></span> ${getEventLabel(e)}</div>`;
         }).join('');
       });
     }
