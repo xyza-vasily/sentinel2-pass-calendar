@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sentinel-2 pass calendar</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --text: #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted: #898781;
+    --border: rgba(11,11,11,0.10);
+    --day-color: #1D9E75;
+    --day-text: #04342C;
+    --night-color: #B4B2A9;
+    --night-text: #2C2C2A;
+    --radius: 8px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #1a1a19;
+      --text: #f0efec;
+      --text-secondary: #c3c2b7;
+      --text-muted: #898781;
+      --border: rgba(255,255,255,0.10);
+      --day-color: #5DCAA5;
+      --day-text: #04342C;
+      --night-color: #5F5E5A;
+      --night-text: #F1EFE8;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 24px 16px 48px;
+  }
+  h1 { font-size: 18px; font-weight: 500; margin: 0 0 4px; }
+  p.subtitle { font-size: 13px; color: var(--text-secondary); margin: 0 0 4px; }
+  p.updated { font-size: 12px; color: var(--text-muted); margin: 0 0 24px; }
+  .nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .nav button {
+    width: 36px; height: 36px; border-radius: var(--radius);
+    border: 0.5px solid var(--border); background: transparent;
+    color: var(--text); font-size: 16px; cursor: pointer;
+  }
+  .nav button:hover { background: rgba(128,128,128,0.1); }
+  .nav button:disabled { opacity: 0.3; cursor: default; }
+  #monthLabel { font-size: 18px; font-weight: 500; }
+  .legend { display: flex; gap: 16px; margin-bottom: 12px; font-size: 12px; color: var(--text-secondary); flex-wrap: wrap; }
+  .legend span { display: flex; align-items: center; gap: 4px; }
+  .swatch { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+  #grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+  .dayname { font-size: 12px; color: var(--text-muted); text-align: center; padding: 4px 0; }
+  .cell {
+    aspect-ratio: 1; border-radius: var(--radius); font-size: 13px;
+    border: 0.5px solid var(--border); background: transparent;
+    color: var(--text); padding: 0; cursor: default;
+  }
+  .cell.has-day { background: var(--day-color); color: var(--day-text); border-color: transparent; cursor: pointer; font-weight: 500; }
+  .cell.has-night-only { background: var(--night-color); color: var(--night-text); border-color: transparent; cursor: pointer; font-weight: 500; }
+  .cell.empty { border: none; cursor: default; }
+  #detail { margin-top: 16px; min-height: 60px; font-size: 13px; color: var(--text-secondary); border-top: 0.5px solid var(--border); padding-top: 12px; }
+  #detail .row { margin-bottom: 4px; }
+  #detail .row .time { font-weight: 500; color: var(--text); }
+  footer { margin-top: 32px; font-size: 12px; color: var(--text-muted); border-top: 0.5px solid var(--border); padding-top: 16px; }
+</style>
+</head>
+<body>
+
+<h1>Sentinel-2 pass calendar</h1>
+<p class="subtitle">__LOCATION_LABEL__ &middot; times shown in __LOCAL_TZ__</p>
+<p class="updated">Last updated __GENERATED_AT__ &middot; refreshes automatically every 10 days</p>
+
+<div class="nav">
+  <button id="prevBtn" aria-label="Previous month">&#8249;</button>
+  <div id="monthLabel"></div>
+  <button id="nextBtn" aria-label="Next month">&#8250;</button>
+</div>
+
+<div class="legend">
+  <span><span class="swatch" style="background:#1D9E75;"></span>Daytime pass (imaging)</span>
+  <span><span class="swatch" style="background:#B4B2A9;"></span>Nighttime pass (no imaging)</span>
+</div>
+
+<div id="grid"></div>
+
+<div id="detail">Select a highlighted day to see pass times.</div>
+
+<footer>
+  Computed by propagating current Sentinel-2A / 2B orbital elements (SGP4, sourced from CelesTrak) forward one year and finding when the ground track passes within the ~290&nbsp;km imaging swath of this location.
+</footer>
+
+<script>
+const passes = __PASSES_JSON__;
+
+const byDate = {};
+passes.forEach(p => {
+  if (!byDate[p.date]) byDate[p.date] = [];
+  byDate[p.date].push(p);
+});
+
+const dates = Object.keys(byDate).sort();
+const firstDate = dates.length ? new Date(dates[0] + "T00:00:00") : new Date();
+
+const months = [];
+let cursor = new Date(firstDate.getFullYear(), firstDate.getMonth(), 1);
+for (let i = 0; i < 13; i++) {
+  months.push(new Date(cursor));
+  cursor.setMonth(cursor.getMonth() + 1);
+}
+
+let idx = 0;
+const monthLabel = document.getElementById('monthLabel');
+const grid = document.getElementById('grid');
+const detail = document.getElementById('detail');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+const dayNames = ['Mo','Tu','We','Th','Fr','Sa','Su'];
+
+function pad(n) { return n < 10 ? '0' + n : '' + n; }
+
+function render() {
+  const d = months[idx];
+  const year = d.getFullYear();
+  const month = d.getMonth();
+  monthLabel.textContent = d.toLocaleDateString('en-GB', { month: 'long', year: 'numeric' });
+  prevBtn.disabled = idx === 0;
+  nextBtn.disabled = idx === months.length - 1;
+  grid.innerHTML = '';
+  dayNames.forEach(dn => {
+    const el = document.createElement('div');
+    el.className = 'dayname';
+    el.textContent = dn;
+    grid.appendChild(el);
+  });
+  const firstDay = new Date(year, month, 1);
+  let startOffset = firstDay.getDay() - 1;
+  if (startOffset < 0) startOffset = 6;
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  for (let i = 0; i < startOffset; i++) {
+    const empty = document.createElement('div');
+    empty.className = 'cell empty';
+    grid.appendChild(empty);
+  }
+  for (let day = 1; day <= daysInMonth; day++) {
+    const dateStr = `${year}-${pad(month+1)}-${pad(day)}`;
+    const cell = document.createElement('button');
+    cell.type = 'button';
+    cell.className = 'cell';
+    cell.textContent = day;
+    const dayPasses = byDate[dateStr];
+    if (dayPasses) {
+      const hasDay = dayPasses.some(p => p.type === 'day');
+      cell.classList.add(hasDay ? 'has-day' : 'has-night-only');
+      cell.addEventListener('click', () => {
+        detail.innerHTML = dayPasses.map(p => {
+          const label = p.type === 'day' ? 'daytime, imaging' : 'nighttime, no imaging';
+          return `<div class="row"><span class="time">${dateStr} ${p.time}</span> &mdash; Sentinel-${p.sat} (${label})</div>`;
+        }).join('');
+      });
+    }
+    grid.appendChild(cell);
+  }
+}
+
+prevBtn.addEventListener('click', () => { if (idx > 0) { idx--; render(); } });
+nextBtn.addEventListener('click', () => { if (idx < months.length - 1) { idx++; render(); } });
+
+render();
+</script>
+</body>
+</html>
