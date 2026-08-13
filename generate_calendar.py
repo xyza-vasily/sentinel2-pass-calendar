@@ -27,6 +27,28 @@ FORECAST_DAYS = 370
 STEP_SECONDS = 30
 CHUNK_DAYS = 5
 
+# ---- Special event dates ------------------------------------------------
+
+def get_special_events():
+    """Return a list of special events with dates and types"""
+    events = []
+    
+    # UAV Flight dates: September 18, 4, 30. October 30, November 30
+    uav_dates = [
+        "2026-09-04",
+        "2026-09-18", 
+        "2026-09-30",
+        "2026-10-30",
+        "2026-11-30",
+    ]
+    for date_str in uav_dates:
+        events.append({"date": date_str, "type": "uav_flight"})
+    
+    # GRS Measurement: September 18
+    events.append({"date": "2026-09-18", "type": "grs_measurement"})
+    
+    return events
+
 # ---- Drill & Drop Reading schedule (every 2 weeks on Friday) ------------
 
 def get_drill_drop_dates(start_date):
@@ -141,8 +163,11 @@ def main():
         for d in drill_drop_dates
     ]
     
+    # ---- Get special events -----------------------------------------------
+    special_rows = get_special_events()
+    
     # ---- Combine and group by date ----------------------------------------
-    all_events = sentinel_rows + drill_drop_rows
+    all_events = sentinel_rows + drill_drop_rows + special_rows
     all_events.sort(key=lambda r: (r["date"], r.get("time", "00:00")))
     
     from collections import defaultdict
@@ -166,6 +191,7 @@ def main():
     print(f"Wrote index.html with {len(all_events)} events, generated at {generated_at}")
     print(f"Sentinel-2 passes: {len(sentinel_rows)}")
     print(f"Drill & Drop readings: {len(drill_drop_rows)}")
+    print(f"Special events: {len(special_rows)}")
 
 
 if __name__ == "__main__":
