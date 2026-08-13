@@ -33,22 +33,21 @@ def get_special_events():
     """Return a list of special events with dates and types"""
     events = []
     
-    # UAV Flight dates
+    # ---- UAV Flight dates (UPDATED) ----
     uav_dates = [
-        "2026-09-04",
-        "2026-09-18",
+        "2026-08-11",
+        "2026-09-10",
         "2026-09-30",
-        "2026-10-30",
-        "2026-11-20",  # Added Nov 20
-        "2026-11-30",
+        "2026-10-02",
+        "2026-11-20",
     ]
     for date_str in uav_dates:
         events.append({"date": date_str, "type": "uav_flight"})
     
-    # GRS Measurement: September 30 (moved from Sep 18)
+    # ---- GRS Measurement: September 30 ----
     events.append({"date": "2026-09-30", "type": "grs_measurement"})
     
-    # ---- Date ranges (display as colored bars) ----------------------------
+    # ---- Date ranges (display as dashed lines) ----------------------------
     
     # Harvest SB: Oct 1-16
     for day in range(1, 17):
