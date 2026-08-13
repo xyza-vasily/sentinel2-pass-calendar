@@ -362,8 +362,7 @@ function render() {
     cell.className = 'cell';
     cell.textContent = day;
     
-    const dayEvents = byDate[dateStr] || [];
-    const hasSentinel = dayEvents.some(e => e.type === 'day' || e.type === 'night');
+        const dayEvents = byDate[dateStr] || [];
     const hasDay = dayEvents.some(e => e.type === 'day');
     const hasNight = dayEvents.some(e => e.type === 'night');
     const hasDrill = dayEvents.some(e => e.type === 'drill_drop');
@@ -384,22 +383,9 @@ function render() {
     if (hasUav) eventTypes.push('uav');
     if (hasGrs) eventTypes.push('grs');
     
-    // Sort for consistent class names
-    eventTypes.sort();
-    
-    if (eventTypes.length >= 2) {
-      const splitClass = getSplitClass(eventTypes);
-      if (splitClass) {
-        cls = splitClass;
-        isClickable = true;
-      } else {
-        // Fallback: use first type
-        cls = `has-${eventTypes[0]}`;
-        isClickable = true;
-      }
-    } else if (eventTypes.length === 1) {
-      cls = `has-${eventTypes[0]}`;
-      isClickable = true;
+    // IMPORTANT: If there's a Sentinel pass (day or night) but NO other events, show the color
+    if (eventTypes.length === 0) {
+        // No events - leave cell empty
     }
     
     // Add dashed line classes for field operations
