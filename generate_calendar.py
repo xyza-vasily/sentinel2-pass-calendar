@@ -33,7 +33,7 @@ def get_special_events():
     """Return a list of special events with dates and types"""
     events = []
     
-    # ---- UAV Flight dates (UPDATED) ----
+    # ---- UAV Flight dates ----
     uav_dates = [
         "2026-08-11",
         "2026-09-10",
@@ -180,9 +180,17 @@ def main():
     # ---- Get special events -----------------------------------------------
     special_rows = get_special_events()
     
-    # ---- Combine and group by date ----------------------------------------
+    # ---- Combine all events -----------------------------------------------
     all_events = sentinel_rows + drill_drop_rows + special_rows
+    
+    # ---- Sort by date -----------------------------------------------------
     all_events.sort(key=lambda r: (r["date"], r.get("time", "00:00")))
+    
+    # ---- Debug: Print all special events to verify ------------------------
+    print("\n===== SPECIAL EVENTS =====")
+    for event in special_rows:
+        print(f"  {event['date']}: {event['type']}")
+    print("==========================\n")
     
     from collections import defaultdict
     by_date = defaultdict(list)
@@ -206,6 +214,7 @@ def main():
     print(f"Sentinel-2 passes: {len(sentinel_rows)}")
     print(f"Drill & Drop readings: {len(drill_drop_rows)}")
     print(f"Special events: {len(special_rows)}")
+    print(f"Total events: {len(all_events)}")
 
 
 if __name__ == "__main__":
