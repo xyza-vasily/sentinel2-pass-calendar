@@ -33,13 +33,11 @@ def get_special_events():
     """Return a list of special events with dates and types"""
     events = []
     
-    # ---- UAV Flight dates ----
+    # ---- UAV Flight dates (UPDATED) ----
     uav_dates = [
         "2026-08-11",
         "2026-09-10",
         "2026-09-30",
-        "2026-10-02",
-        "2026-11-20",
     ]
     for date_str in uav_dates:
         events.append({"date": date_str, "type": "uav_flight"})
