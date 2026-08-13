@@ -3,7 +3,7 @@ Regenerates index.html: a Sentinel-2A/2B overpass calendar for a fixed
 location, computed by propagating fresh orbital elements one year forward.
 """
 import json
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
 from zoneinfo import ZoneInfo
 
 import numpy as np
@@ -26,6 +26,25 @@ HALF_SWATH_KM = 145.0
 FORECAST_DAYS = 370
 STEP_SECONDS = 30
 CHUNK_DAYS = 5
+
+# ---- Drill & Drop Reading schedule (every 2 weeks on Friday) ------------
+
+def get_drill_drop_dates(start_date):
+    """Generate Drill & Drop Reading dates every 2 weeks on Friday"""
+    dates = []
+    current = start_date
+    
+    # Find the first Friday on or after the start date
+    while current.weekday() != 4:  # 4 = Friday
+        current += timedelta(days=1)
+    
+    # Generate dates for the next year
+    end_date = start_date + timedelta(days=365)
+    while current <= end_date:
+        dates.append(current.strftime("%Y-%m-%d"))
+        current += timedelta(days=14)  # Every 2 weeks
+    
+    return dates
 
 # ---- fetch fresh TLEs from CelesTrak --------------------------------------
 
@@ -85,6 +104,7 @@ def main():
     start = datetime.now(timezone.utc)
     t0 = ts.utc(start.year, start.month, start.day)
 
+    # ---- Get Sentinel-2 passes --------------------------------------------
     all_results = []
     for catnr, label in SATELLITES:
         line1, line2 = fetch_tle(catnr)
@@ -95,20 +115,43 @@ def main():
         all_results.extend(res)
 
     local_tz = ZoneInfo(LOCAL_TZ)
-    rows = []
+    
+    # ---- Create sentinel pass data ----------------------------------------
+    sentinel_rows = []
     for t_iso, label in all_results:
         dt_utc = datetime.strptime(t_iso, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
         dt_local = dt_utc.astimezone(local_tz)
         kind = "day" if 7 <= dt_local.hour <= 16 else "night"
-        rows.append({
+        sentinel_rows.append({
             "date": dt_local.strftime("%Y-%m-%d"),
             "time": dt_local.strftime("%H:%M"),
             "sat": label.replace("Sentinel-", ""),
             "type": kind,
         })
-    rows.sort(key=lambda r: (r["date"], r["time"]))
+    
+    # ---- Create Drill & Drop Reading schedule -----------------------------
+    # Start from August 21, 2026 (or current date if later)
+    start_date = datetime(2026, 8, 21, tzinfo=timezone.utc)
+    if start_date < start:
+        start_date = start.replace(hour=0, minute=0, second=0, microsecond=0)
+    
+    drill_drop_dates = get_drill_drop_dates(start_date)
+    drill_drop_rows = [
+        {"date": d, "type": "drill_drop"}
+        for d in drill_drop_dates
+    ]
+    
+    # ---- Combine and group by date ----------------------------------------
+    all_events = sentinel_rows + drill_drop_rows
+    all_events.sort(key=lambda r: (r["date"], r.get("time", "00:00")))
+    
+    from collections import defaultdict
+    by_date = defaultdict(list)
+    for event in all_events:
+        by_date[event["date"]].append(event)
 
-    passes_json = json.dumps(rows)
+    # ---- Generate HTML ----------------------------------------------------
+    passes_json = json.dumps(all_events)
     generated_at = start.strftime("%Y-%m-%d %H:%M UTC")
 
     template = open("template.html", encoding="utf-8").read()
@@ -120,7 +163,9 @@ def main():
     with open("index.html", "w", encoding="utf-8") as f:
         f.write(html)
 
-    print(f"Wrote index.html with {len(rows)} passes, generated at {generated_at}")
+    print(f"Wrote index.html with {len(all_events)} events, generated at {generated_at}")
+    print(f"Sentinel-2 passes: {len(sentinel_rows)}")
+    print(f"Drill & Drop readings: {len(drill_drop_rows)}")
 
 
 if __name__ == "__main__":
