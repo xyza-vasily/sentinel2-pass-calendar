@@ -68,12 +68,14 @@
     font-weight: 500;
   }
 
+  /* ---- Single Event Colors ---- */
   .cell.has-day { background: var(--day-color); color: var(--day-text); border-color: transparent; cursor: pointer; }
-  .cell.has-night-only { background: var(--night-color); color: var(--night-text); border-color: transparent; cursor: pointer; }
+  .cell.has-night { background: var(--night-color); color: var(--night-text); border-color: transparent; cursor: pointer; }
   .cell.has-drill { background: var(--drill-color); color: var(--drill-text); border-color: transparent; cursor: pointer; }
   .cell.has-uav { background: var(--uav-color); color: var(--uav-text); border-color: transparent; cursor: pointer; }
   .cell.has-grs { background: var(--grs-color); color: var(--grs-text); border-color: transparent; cursor: pointer; }
 
+  /* ---- 2-Way Splits ---- */
   .cell.split-day-drill { background: linear-gradient(135deg, var(--day-color) 50%, var(--drill-color) 50%); border-color: transparent; cursor: pointer; color: var(--day-text); }
   .cell.split-night-drill { background: linear-gradient(135deg, var(--night-color) 50%, var(--drill-color) 50%); border-color: transparent; cursor: pointer; color: var(--night-text); }
   .cell.split-day-uav { background: linear-gradient(135deg, var(--day-color) 50%, var(--uav-color) 50%); border-color: transparent; cursor: pointer; color: var(--day-text); }
@@ -84,6 +86,7 @@
   .cell.split-drill-grs { background: linear-gradient(135deg, var(--drill-color) 50%, var(--grs-color) 50%); border-color: transparent; cursor: pointer; color: var(--drill-text); }
   .cell.split-uav-grs { background: linear-gradient(135deg, var(--uav-color) 50%, var(--grs-color) 50%); border-color: transparent; cursor: pointer; color: var(--uav-text); }
 
+  /* ---- 3-Way Splits ---- */
   .cell.split-day-uav-grs { background: linear-gradient(135deg, var(--day-color) 33%, var(--uav-color) 33%, var(--uav-color) 66%, var(--grs-color) 66%); border-color: transparent; cursor: pointer; color: var(--day-text); }
   .cell.split-night-uav-grs { background: linear-gradient(135deg, var(--night-color) 33%, var(--uav-color) 33%, var(--uav-color) 66%, var(--grs-color) 66%); border-color: transparent; cursor: pointer; color: var(--night-text); }
   .cell.split-day-drill-uav { background: linear-gradient(135deg, var(--day-color) 33%, var(--drill-color) 33%, var(--drill-color) 66%, var(--uav-color) 66%); border-color: transparent; cursor: pointer; color: var(--day-text); }
@@ -92,6 +95,7 @@
   .cell.split-night-drill-grs { background: linear-gradient(135deg, var(--night-color) 33%, var(--drill-color) 33%, var(--drill-color) 66%, var(--grs-color) 66%); border-color: transparent; cursor: pointer; color: var(--night-text); }
   .cell.split-drill-uav-grs { background: linear-gradient(135deg, var(--drill-color) 33%, var(--uav-color) 33%, var(--uav-color) 66%, var(--grs-color) 66%); border-color: transparent; cursor: pointer; color: var(--drill-text); }
 
+  /* ---- 4-Way Split (Sept 30) ---- */
   .cell.split-day-uav-grs-drill { 
     background: linear-gradient(135deg, 
       var(--day-color) 25%, 
@@ -119,6 +123,7 @@
     color: var(--night-text); 
   }
 
+  /* ---- Dashed Lines for Field Operations ---- */
   .cell.harvest-line { border-color: var(--harvest-color); border-width: 2px; border-style: dashed; background: transparent; cursor: default; position: relative; }
   .cell.harvest-line::after { content: ''; position: absolute; top: 50%; left: 0; right: 0; height: 0px; border-top: 3px dashed var(--harvest-color); transform: translateY(-50%); }
   .cell.harvest-line .label { position: absolute; font-size: 6px; color: var(--harvest-color); font-weight: 700; top: 1px; left: 2px; text-transform: uppercase; letter-spacing: 0.3px; }
@@ -131,6 +136,7 @@
   .cell.sowing-line::after { content: ''; position: absolute; top: 50%; left: 0; right: 0; height: 0px; border-top: 3px dashed var(--sowing-color); transform: translateY(-50%); }
   .cell.sowing-line .label { position: absolute; font-size: 6px; color: var(--sowing-color); font-weight: 700; top: 1px; left: 2px; text-transform: uppercase; letter-spacing: 0.3px; }
 
+  /* ---- Badges ---- */
   .cell .badge {
     position: absolute;
     font-size: 5px;
@@ -147,6 +153,7 @@
   
   .cell.empty { border: none; cursor: default; background: transparent !important; }
   
+  /* ---- Detail Panel ---- */
   #detail { 
     margin-top: 16px; 
     min-height: 60px; 
@@ -371,6 +378,7 @@ function render() {
     const dayEvents = byDate[dateStr] || [];
     const hasSentinel = dayEvents.some(e => e.type === 'day' || e.type === 'night');
     const hasDay = dayEvents.some(e => e.type === 'day');
+    const hasNight = dayEvents.some(e => e.type === 'night');
     const hasDrill = dayEvents.some(e => e.type === 'drill_drop');
     const hasUav = dayEvents.some(e => e.type === 'uav_flight');
     const hasGrs = dayEvents.some(e => e.type === 'grs_measurement');
@@ -381,11 +389,16 @@ function render() {
     let cls = '';
     let isClickable = false;
     
+    // Build event types for split detection
     const eventTypes = [];
-    if (hasSentinel) eventTypes.push(hasDay ? 'day' : 'night');
+    if (hasDay) eventTypes.push('day');
+    if (hasNight) eventTypes.push('night');
     if (hasDrill) eventTypes.push('drill');
     if (hasUav) eventTypes.push('uav');
     if (hasGrs) eventTypes.push('grs');
+    
+    // Sort for consistent class names
+    eventTypes.sort();
     
     if (eventTypes.length >= 2) {
       const splitClass = getSplitClass(eventTypes);
@@ -393,6 +406,7 @@ function render() {
         cls = splitClass;
         isClickable = true;
       } else {
+        // Fallback: use first type
         cls = `has-${eventTypes[0]}`;
         isClickable = true;
       }
@@ -401,6 +415,7 @@ function render() {
       isClickable = true;
     }
     
+    // Add dashed line classes for field operations
     if (hasHarvest) {
       cls += ' harvest-line';
       const prevDay = `${year}-${pad(month+1)}-${pad(day-1)}`;
@@ -432,6 +447,7 @@ function render() {
       }
     }
     
+    // Add badges for point events
     const pointEvents = ['drill_drop', 'uav_flight', 'grs_measurement'];
     for (const eType of pointEvents) {
       if (dayEvents.some(e => e.type === eType)) {
