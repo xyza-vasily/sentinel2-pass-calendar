@@ -98,11 +98,11 @@
   .cell.has-uav { background: var(--uav-color); color: var(--uav-text); border-color: transparent; cursor: pointer; font-weight: 500; }
   .cell.has-grs { background: var(--grs-color); color: var(--grs-text); border-color: transparent; cursor: pointer; font-weight: 500; }
   
-  /* ---- Field Operation Bars (lines across the calendar) ---- */
+  /* ---- Field Operation Dashed Lines ---- */
   .cell.harvest-line {
     border-color: var(--harvest-color);
     border-width: 2px;
-    border-style: solid;
+    border-style: dashed;
     background: transparent;
     cursor: default;
     position: relative;
@@ -113,10 +113,9 @@
     top: 50%;
     left: 0;
     right: 0;
-    height: 3px;
-    background: var(--harvest-color);
+    height: 0px;
+    border-top: 3px dashed var(--harvest-color);
     transform: translateY(-50%);
-    border-radius: 2px;
   }
   .cell.harvest-line .label {
     position: absolute;
@@ -132,7 +131,7 @@
   .cell.tillage-line {
     border-color: var(--tillage-color);
     border-width: 2px;
-    border-style: solid;
+    border-style: dashed;
     background: transparent;
     cursor: default;
     position: relative;
@@ -143,10 +142,9 @@
     top: 50%;
     left: 0;
     right: 0;
-    height: 3px;
-    background: var(--tillage-color);
+    height: 0px;
+    border-top: 3px dashed var(--tillage-color);
     transform: translateY(-50%);
-    border-radius: 2px;
   }
   .cell.tillage-line .label {
     position: absolute;
@@ -162,7 +160,7 @@
   .cell.sowing-line {
     border-color: var(--sowing-color);
     border-width: 2px;
-    border-style: solid;
+    border-style: dashed;
     background: transparent;
     cursor: default;
     position: relative;
@@ -173,10 +171,9 @@
     top: 50%;
     left: 0;
     right: 0;
-    height: 3px;
-    background: var(--sowing-color);
+    height: 0px;
+    border-top: 3px dashed var(--sowing-color);
     transform: translateY(-50%);
-    border-radius: 2px;
   }
   .cell.sowing-line .label {
     position: absolute;
@@ -189,29 +186,29 @@
     letter-spacing: 0.3px;
   }
 
-  /* ---- Multi-event: line + colored cell ---- */
-  .cell.has-day.harvest-line { background: var(--day-color); color: var(--day-text); border-color: var(--harvest-color); border-width: 2px; cursor: pointer; }
-  .cell.has-day.harvest-line::after { background: var(--harvest-color); }
+  /* ---- Multi-event: dashed line + colored cell ---- */
+  .cell.has-day.harvest-line { background: var(--day-color); color: var(--day-text); border-color: var(--harvest-color); border-width: 2px; border-style: dashed; cursor: pointer; }
+  .cell.has-day.harvest-line::after { border-top: 3px dashed var(--harvest-color); }
   .cell.has-day.harvest-line .label { color: var(--harvest-color); }
   
-  .cell.has-night-only.harvest-line { background: var(--night-color); color: var(--night-text); border-color: var(--harvest-color); border-width: 2px; cursor: pointer; }
-  .cell.has-night-only.harvest-line::after { background: var(--harvest-color); }
+  .cell.has-night-only.harvest-line { background: var(--night-color); color: var(--night-text); border-color: var(--harvest-color); border-width: 2px; border-style: dashed; cursor: pointer; }
+  .cell.has-night-only.harvest-line::after { border-top: 3px dashed var(--harvest-color); }
   .cell.has-night-only.harvest-line .label { color: var(--harvest-color); }
   
-  .cell.has-day.tillage-line { background: var(--day-color); color: var(--day-text); border-color: var(--tillage-color); border-width: 2px; cursor: pointer; }
-  .cell.has-day.tillage-line::after { background: var(--tillage-color); }
+  .cell.has-day.tillage-line { background: var(--day-color); color: var(--day-text); border-color: var(--tillage-color); border-width: 2px; border-style: dashed; cursor: pointer; }
+  .cell.has-day.tillage-line::after { border-top: 3px dashed var(--tillage-color); }
   .cell.has-day.tillage-line .label { color: var(--tillage-color); }
   
-  .cell.has-night-only.tillage-line { background: var(--night-color); color: var(--night-text); border-color: var(--tillage-color); border-width: 2px; cursor: pointer; }
-  .cell.has-night-only.tillage-line::after { background: var(--tillage-color); }
+  .cell.has-night-only.tillage-line { background: var(--night-color); color: var(--night-text); border-color: var(--tillage-color); border-width: 2px; border-style: dashed; cursor: pointer; }
+  .cell.has-night-only.tillage-line::after { border-top: 3px dashed var(--tillage-color); }
   .cell.has-night-only.tillage-line .label { color: var(--tillage-color); }
   
-  .cell.has-day.sowing-line { background: var(--day-color); color: var(--day-text); border-color: var(--sowing-color); border-width: 2px; cursor: pointer; }
-  .cell.has-day.sowing-line::after { background: var(--sowing-color); }
+  .cell.has-day.sowing-line { background: var(--day-color); color: var(--day-text); border-color: var(--sowing-color); border-width: 2px; border-style: dashed; cursor: pointer; }
+  .cell.has-day.sowing-line::after { border-top: 3px dashed var(--sowing-color); }
   .cell.has-day.sowing-line .label { color: var(--sowing-color); }
   
-  .cell.has-night-only.sowing-line { background: var(--night-color); color: var(--night-text); border-color: var(--sowing-color); border-width: 2px; cursor: pointer; }
-  .cell.has-night-only.sowing-line::after { background: var(--sowing-color); }
+  .cell.has-night-only.sowing-line { background: var(--night-color); color: var(--night-text); border-color: var(--sowing-color); border-width: 2px; border-style: dashed; cursor: pointer; }
+  .cell.has-night-only.sowing-line::after { border-top: 3px dashed var(--sowing-color); }
   .cell.has-night-only.sowing-line .label { color: var(--sowing-color); }
 
   .cell .badge {
@@ -278,8 +275,8 @@
   }
   .period-legend .line-sample {
     width: 20px;
-    height: 3px;
-    border-radius: 2px;
+    height: 0px;
+    border-top: 3px dashed #000;
     display: inline-block;
   }
   
@@ -307,9 +304,9 @@
 </div>
 
 <div class="period-legend">
-  <span class="period-item"><span class="line-sample" style="background:#3B82F6;"></span> Harvest SB (Oct 1-16)</span>
-  <span class="period-item"><span class="line-sample" style="background:#92400E;"></span> Tillage (Oct 19-23)</span>
-  <span class="period-item"><span class="line-sample" style="background:#22C55E;"></span> Sowing (Oct 26-30)</span>
+  <span class="period-item"><span class="line-sample" style="border-color:#3B82F6;"></span> Harvest SB (Oct 1-16)</span>
+  <span class="period-item"><span class="line-sample" style="border-color:#92400E;"></span> Tillage (Oct 19-23)</span>
+  <span class="period-item"><span class="line-sample" style="border-color:#22C55E;"></span> Sowing (Oct 26-30)</span>
 </div>
 
 <div id="grid"></div>
@@ -392,20 +389,6 @@ function getBadgeClass(type) {
   return map[type] || '';
 }
 
-function getShortType(type) {
-  const map = {
-    'day': 'day',
-    'night': 'night',
-    'drill_drop': 'drill',
-    'uav_flight': 'uav',
-    'grs_measurement': 'grs',
-    'harvest': 'harvest',
-    'tillage': 'tillage',
-    'sowing': 'sowing'
-  };
-  return map[type] || type;
-}
-
 function render() {
   const d = months[idx];
   const year = d.getFullYear();
@@ -442,6 +425,7 @@ function render() {
     
     const dayEvents = byDate[dateStr] || [];
     const hasSentinel = dayEvents.some(e => e.type === 'day' || e.type === 'night');
+    const hasDay = dayEvents.some(e => e.type === 'day');
     const hasDrill = dayEvents.some(e => e.type === 'drill_drop');
     const hasUav = dayEvents.some(e => e.type === 'uav_flight');
     const hasGrs = dayEvents.some(e => e.type === 'grs_measurement');
@@ -455,12 +439,11 @@ function render() {
     
     // Sentinel pass (fills the cell)
     if (hasSentinel) {
-      const hasDay = dayEvents.some(e => e.type === 'day');
       cls += ` has-${hasDay ? 'day' : 'night-only'}`;
       isClickable = true;
     }
     
-    // Field operation lines (border + line through cell)
+    // Field operation dashed lines
     if (hasHarvest) {
       cls += ' harvest-line';
       // Add label for first day of harvest
