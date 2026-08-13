@@ -78,6 +78,8 @@
   .legend { display: flex; gap: 8px; margin-bottom: 12px; font-size: 10px; color: var(--text-secondary); flex-wrap: wrap; }
   .legend span { display: flex; align-items: center; gap: 3px; }
   .swatch { width: 12px; height: 12px; border-radius: 3px; display: inline-block; border: 0.5px solid var(--border); }
+
+  /* ---- Calendar Grid ---- */
   #grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
   .dayname { font-size: 11px; color: var(--text-muted); text-align: center; padding: 4px 0; font-weight: 500; }
   .cell {
@@ -95,24 +97,123 @@
   .cell.has-drill { background: var(--drill-color); color: var(--drill-text); border-color: transparent; cursor: pointer; font-weight: 500; }
   .cell.has-uav { background: var(--uav-color); color: var(--uav-text); border-color: transparent; cursor: pointer; font-weight: 500; }
   .cell.has-grs { background: var(--grs-color); color: var(--grs-text); border-color: transparent; cursor: pointer; font-weight: 500; }
-  .cell.has-harvest { background: var(--harvest-color); color: var(--harvest-text); border-color: transparent; cursor: pointer; font-weight: 500; }
-  .cell.has-tillage { background: var(--tillage-color); color: var(--tillage-text); border-color: transparent; cursor: pointer; font-weight: 500; }
-  .cell.has-sowing { background: var(--sowing-color); color: var(--sowing-text); border-color: transparent; cursor: pointer; font-weight: 500; }
   
-  /* Multi-event diagonal splits */
-  .cell.split-day-drill { background: linear-gradient(135deg, var(--day-color) 50%, var(--drill-color) 50%); border-color: transparent; cursor: pointer; font-weight: 500; color: var(--day-text); }
-  .cell.split-night-drill { background: linear-gradient(135deg, var(--night-color) 50%, var(--drill-color) 50%); border-color: transparent; cursor: pointer; font-weight: 500; color: var(--night-text); }
-  .cell.split-day-uav { background: linear-gradient(135deg, var(--day-color) 50%, var(--uav-color) 50%); border-color: transparent; cursor: pointer; font-weight: 500; color: var(--day-text); }
-  .cell.split-night-uav { background: linear-gradient(135deg, var(--night-color) 50%, var(--uav-color) 50%); border-color: transparent; cursor: pointer; font-weight: 500; color: var(--night-text); }
-  .cell.split-day-grs { background: linear-gradient(135deg, var(--day-color) 50%, var(--grs-color) 50%); border-color: transparent; cursor: pointer; font-weight: 500; color: var(--day-text); }
-  .cell.split-night-grs { background: linear-gradient(135deg, var(--night-color) 50%, var(--grs-color) 50%); border-color: transparent; cursor: pointer; font-weight: 500; color: var(--night-text); }
-  .cell.split-day-harvest { background: linear-gradient(135deg, var(--day-color) 50%, var(--harvest-color) 50%); border-color: transparent; cursor: pointer; font-weight: 500; color: var(--day-text); }
-  .cell.split-night-harvest { background: linear-gradient(135deg, var(--night-color) 50%, var(--harvest-color) 50%); border-color: transparent; cursor: pointer; font-weight: 500; color: var(--night-text); }
-  .cell.split-day-tillage { background: linear-gradient(135deg, var(--day-color) 50%, var(--tillage-color) 50%); border-color: transparent; cursor: pointer; font-weight: 500; color: var(--day-text); }
-  .cell.split-night-tillage { background: linear-gradient(135deg, var(--night-color) 50%, var(--tillage-color) 50%); border-color: transparent; cursor: pointer; font-weight: 500; color: var(--night-text); }
-  .cell.split-day-sowing { background: linear-gradient(135deg, var(--day-color) 50%, var(--sowing-color) 50%); border-color: transparent; cursor: pointer; font-weight: 500; color: var(--day-text); }
-  .cell.split-night-sowing { background: linear-gradient(135deg, var(--night-color) 50%, var(--sowing-color) 50%); border-color: transparent; cursor: pointer; font-weight: 500; color: var(--night-text); }
+  /* ---- Field Operation Bars (lines across the calendar) ---- */
+  .cell.harvest-line {
+    border-color: var(--harvest-color);
+    border-width: 2px;
+    border-style: solid;
+    background: transparent;
+    cursor: default;
+    position: relative;
+  }
+  .cell.harvest-line::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--harvest-color);
+    transform: translateY(-50%);
+    border-radius: 2px;
+  }
+  .cell.harvest-line .label {
+    position: absolute;
+    font-size: 6px;
+    color: var(--harvest-color);
+    font-weight: 700;
+    top: 1px;
+    left: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
   
+  .cell.tillage-line {
+    border-color: var(--tillage-color);
+    border-width: 2px;
+    border-style: solid;
+    background: transparent;
+    cursor: default;
+    position: relative;
+  }
+  .cell.tillage-line::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--tillage-color);
+    transform: translateY(-50%);
+    border-radius: 2px;
+  }
+  .cell.tillage-line .label {
+    position: absolute;
+    font-size: 6px;
+    color: var(--tillage-color);
+    font-weight: 700;
+    top: 1px;
+    left: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+  
+  .cell.sowing-line {
+    border-color: var(--sowing-color);
+    border-width: 2px;
+    border-style: solid;
+    background: transparent;
+    cursor: default;
+    position: relative;
+  }
+  .cell.sowing-line::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: var(--sowing-color);
+    transform: translateY(-50%);
+    border-radius: 2px;
+  }
+  .cell.sowing-line .label {
+    position: absolute;
+    font-size: 6px;
+    color: var(--sowing-color);
+    font-weight: 700;
+    top: 1px;
+    left: 2px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+  }
+
+  /* ---- Multi-event: line + colored cell ---- */
+  .cell.has-day.harvest-line { background: var(--day-color); color: var(--day-text); border-color: var(--harvest-color); border-width: 2px; cursor: pointer; }
+  .cell.has-day.harvest-line::after { background: var(--harvest-color); }
+  .cell.has-day.harvest-line .label { color: var(--harvest-color); }
+  
+  .cell.has-night-only.harvest-line { background: var(--night-color); color: var(--night-text); border-color: var(--harvest-color); border-width: 2px; cursor: pointer; }
+  .cell.has-night-only.harvest-line::after { background: var(--harvest-color); }
+  .cell.has-night-only.harvest-line .label { color: var(--harvest-color); }
+  
+  .cell.has-day.tillage-line { background: var(--day-color); color: var(--day-text); border-color: var(--tillage-color); border-width: 2px; cursor: pointer; }
+  .cell.has-day.tillage-line::after { background: var(--tillage-color); }
+  .cell.has-day.tillage-line .label { color: var(--tillage-color); }
+  
+  .cell.has-night-only.tillage-line { background: var(--night-color); color: var(--night-text); border-color: var(--tillage-color); border-width: 2px; cursor: pointer; }
+  .cell.has-night-only.tillage-line::after { background: var(--tillage-color); }
+  .cell.has-night-only.tillage-line .label { color: var(--tillage-color); }
+  
+  .cell.has-day.sowing-line { background: var(--day-color); color: var(--day-text); border-color: var(--sowing-color); border-width: 2px; cursor: pointer; }
+  .cell.has-day.sowing-line::after { background: var(--sowing-color); }
+  .cell.has-day.sowing-line .label { color: var(--sowing-color); }
+  
+  .cell.has-night-only.sowing-line { background: var(--night-color); color: var(--night-text); border-color: var(--sowing-color); border-width: 2px; cursor: pointer; }
+  .cell.has-night-only.sowing-line::after { background: var(--sowing-color); }
+  .cell.has-night-only.sowing-line .label { color: var(--sowing-color); }
+
   .cell .badge {
     position: absolute;
     font-size: 5px;
@@ -126,12 +227,10 @@
   .cell .badge-drill { color: var(--drill-text); }
   .cell .badge-uav { color: var(--uav-text); }
   .cell .badge-grs { color: var(--grs-text); }
-  .cell .badge-harvest { color: var(--harvest-text); }
-  .cell .badge-tillage { color: var(--tillage-text); }
-  .cell .badge-sowing { color: var(--sowing-text); }
   
   .cell.empty { border: none; cursor: default; background: transparent !important; }
   
+  /* ---- Detail Panel ---- */
   #detail { 
     margin-top: 16px; 
     min-height: 60px; 
@@ -159,6 +258,31 @@
   .dot-tillage { background: var(--tillage-color); }
   .dot-sowing { background: var(--sowing-color); }
   
+  /* ---- Legend for Field Operation Periods ---- */
+  .period-legend {
+    display: flex;
+    gap: 12px;
+    margin: 8px 0 12px;
+    padding: 8px 12px;
+    background: var(--bg);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius);
+    flex-wrap: wrap;
+    font-size: 10px;
+    color: var(--text-secondary);
+  }
+  .period-legend .period-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .period-legend .line-sample {
+    width: 20px;
+    height: 3px;
+    border-radius: 2px;
+    display: inline-block;
+  }
+  
   footer { margin-top: 32px; font-size: 11px; color: var(--text-muted); border-top: 0.5px solid var(--border); padding-top: 16px; text-align: center; }
 </style>
 </head>
@@ -180,9 +304,12 @@
   <span><span class="swatch" style="background:#F97316;"></span>D&amp;D</span>
   <span><span class="swatch" style="background:#8B5CF6;"></span>UAV</span>
   <span><span class="swatch" style="background:#EAB308;"></span>GRS</span>
-  <span><span class="swatch" style="background:#3B82F6;"></span>Harvest SB</span>
-  <span><span class="swatch" style="background:#92400E;"></span>Tillage</span>
-  <span><span class="swatch" style="background:#22C55E;"></span>Sowing</span>
+</div>
+
+<div class="period-legend">
+  <span class="period-item"><span class="line-sample" style="background:#3B82F6;"></span> Harvest SB (Oct 1-16)</span>
+  <span class="period-item"><span class="line-sample" style="background:#92400E;"></span> Tillage (Oct 19-23)</span>
+  <span class="period-item"><span class="line-sample" style="background:#22C55E;"></span> Sowing (Oct 26-30)</span>
 </div>
 
 <div id="grid"></div>
@@ -251,10 +378,7 @@ function getBadgeText(type) {
   const map = {
     'drill_drop': 'D&D',
     'uav_flight': 'UAV',
-    'grs_measurement': 'GRS',
-    'harvest': 'SB',
-    'tillage': 'TIL',
-    'sowing': 'SOW'
+    'grs_measurement': 'GRS'
   };
   return map[type] || '';
 }
@@ -263,10 +387,7 @@ function getBadgeClass(type) {
   const map = {
     'drill_drop': 'badge-drill',
     'uav_flight': 'badge-uav',
-    'grs_measurement': 'badge-grs',
-    'harvest': 'badge-harvest',
-    'tillage': 'badge-tillage',
-    'sowing': 'badge-sowing'
+    'grs_measurement': 'badge-grs'
   };
   return map[type] || '';
 }
@@ -328,84 +449,85 @@ function render() {
     const hasTillage = dayEvents.some(e => e.type === 'tillage');
     const hasSowing = dayEvents.some(e => e.type === 'sowing');
     
-    const types = [];
+    // Determine cell classes
+    let cls = '';
+    let isClickable = false;
+    
+    // Sentinel pass (fills the cell)
     if (hasSentinel) {
       const hasDay = dayEvents.some(e => e.type === 'day');
-      types.push(hasDay ? 'day' : 'night');
+      cls += ` has-${hasDay ? 'day' : 'night-only'}`;
+      isClickable = true;
     }
-    if (hasDrill) types.push('drill');
-    if (hasUav) types.push('uav');
-    if (hasGrs) types.push('grs');
-    if (hasHarvest) types.push('harvest');
-    if (hasTillage) types.push('tillage');
-    if (hasSowing) types.push('sowing');
     
-    if (types.length > 0) {
-      let cls = '';
-      
-      if (types.length === 1) {
-        const t = types[0];
-        cls = `has-${t}`;
-      } else if (types.length === 2) {
-        const pair = types.join('-');
-        const map = {
-          'day-drill': 'split-day-drill',
-          'night-drill': 'split-night-drill',
-          'day-uav': 'split-day-uav',
-          'night-uav': 'split-night-uav',
-          'day-grs': 'split-day-grs',
-          'night-grs': 'split-night-grs',
-          'day-harvest': 'split-day-harvest',
-          'night-harvest': 'split-night-harvest',
-          'day-tillage': 'split-day-tillage',
-          'night-tillage': 'split-night-tillage',
-          'day-sowing': 'split-day-sowing',
-          'night-sowing': 'split-night-sowing',
-        };
-        cls = map[pair] || `has-${types[0]}`;
-      } else {
-        // 3+ event types - multi-color gradient
-        const colorMap = {
-          'day': 'var(--day-color)',
-          'night': 'var(--night-color)',
-          'drill': 'var(--drill-color)',
-          'uav': 'var(--uav-color)',
-          'grs': 'var(--grs-color)',
-          'harvest': 'var(--harvest-color)',
-          'tillage': 'var(--tillage-color)',
-          'sowing': 'var(--sowing-color)'
-        };
-        const colors = types.map(t => colorMap[t] || 'var(--day-color)');
-        const angle = 45 + (colors.length - 2) * 15;
-        cell.style.background = `linear-gradient(${angle}deg, ${colors.join(', ')})`;
-        cell.style.borderColor = 'transparent';
-        cell.style.cursor = 'pointer';
-        cls = `has-${types[0]}`;
+    // Field operation lines (border + line through cell)
+    if (hasHarvest) {
+      cls += ' harvest-line';
+      // Add label for first day of harvest
+      const prevDay = `${year}-${pad(month+1)}-${pad(day-1)}`;
+      if (!byDate[prevDay] || !byDate[prevDay].some(e => e.type === 'harvest')) {
+        const label = document.createElement('span');
+        label.className = 'label';
+        label.textContent = 'SB';
+        cell.appendChild(label);
       }
-      
-      if (cls) {
-        cell.className = `cell ${cls}`;
-        cell.style.cursor = 'pointer';
-        
-        // Add badge for first non-sentinel event
-        const badgeTypes = ['drill', 'uav', 'grs', 'harvest', 'tillage', 'sowing'];
-        for (const bt of badgeTypes) {
-          if (types.includes(bt)) {
-            const badgeText = bt === 'drill' ? 'D&D' :
-                              bt === 'uav' ? 'UAV' :
-                              bt === 'grs' ? 'GRS' :
-                              bt === 'harvest' ? 'SB' :
-                              bt === 'tillage' ? 'TIL' :
-                              bt === 'sowing' ? 'SOW' : '';
-            const badge = document.createElement('span');
-            badge.className = `badge badge-${bt}`;
-            badge.textContent = badgeText;
-            cell.appendChild(badge);
-            break;
-          }
-        }
+    }
+    if (hasTillage) {
+      cls += ' tillage-line';
+      const prevDay = `${year}-${pad(month+1)}-${pad(day-1)}`;
+      if (!byDate[prevDay] || !byDate[prevDay].some(e => e.type === 'tillage')) {
+        const label = document.createElement('span');
+        label.className = 'label';
+        label.textContent = 'TIL';
+        cell.appendChild(label);
       }
-      
+    }
+    if (hasSowing) {
+      cls += ' sowing-line';
+      const prevDay = `${year}-${pad(month+1)}-${pad(day-1)}`;
+      if (!byDate[prevDay] || !byDate[prevDay].some(e => e.type === 'sowing')) {
+        const label = document.createElement('span');
+        label.className = 'label';
+        label.textContent = 'SOW';
+        cell.appendChild(label);
+      }
+    }
+    
+    // Point events (Drill, UAV, GRS) - show as colored cells with badges
+    if (hasDrill && !hasSentinel) {
+      cls += ' has-drill';
+      isClickable = true;
+    }
+    if (hasUav && !hasSentinel) {
+      cls += ' has-uav';
+      isClickable = true;
+    }
+    if (hasGrs && !hasSentinel) {
+      cls += ' has-grs';
+      isClickable = true;
+    }
+    
+    // Add badges for point events
+    const pointEvents = ['drill_drop', 'uav_flight', 'grs_measurement'];
+    for (const eType of pointEvents) {
+      if (dayEvents.some(e => e.type === eType)) {
+        const badge = document.createElement('span');
+        badge.className = `badge ${getBadgeClass(eType)}`;
+        badge.textContent = getBadgeText(eType);
+        cell.appendChild(badge);
+        break;
+      }
+    }
+    
+    if (cls) {
+      cell.className = `cell ${cls.trim()}`;
+      if (isClickable) {
+        cell.style.cursor = 'pointer';
+      }
+    }
+    
+    // Click handler for any non-empty cell
+    if (dayEvents.length > 0) {
       cell.addEventListener('click', () => {
         detail.innerHTML = dayEvents.map(e => {
           const dotClass = getDotClass(e.type);
@@ -413,6 +535,7 @@ function render() {
         }).join('');
       });
     }
+    
     grid.appendChild(cell);
   }
 }
