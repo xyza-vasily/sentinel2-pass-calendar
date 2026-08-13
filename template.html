@@ -17,6 +17,10 @@
     --night-text: #2C2C2A;
     --drill-color: #F97316;
     --drill-text: #FFFFFF;
+    --uav-color: #8B5CF6;
+    --uav-text: #FFFFFF;
+    --grs-color: #EAB308;
+    --grs-text: #000000;
     --radius: 8px;
   }
   @media (prefers-color-scheme: dark) {
@@ -32,6 +36,10 @@
       --night-text: #F1EFE8;
       --drill-color: #FB923C;
       --drill-text: #FFFFFF;
+      --uav-color: #A78BFA;
+      --uav-text: #FFFFFF;
+      --grs-color: #FCD34D;
+      --grs-text: #000000;
     }
   }
   * { box-sizing: border-box; }
@@ -55,56 +63,52 @@
   .nav button:hover { background: rgba(128,128,128,0.1); }
   .nav button:disabled { opacity: 0.3; cursor: default; }
   #monthLabel { font-size: 18px; font-weight: 500; }
-  .legend { display: flex; gap: 16px; margin-bottom: 12px; font-size: 12px; color: var(--text-secondary); flex-wrap: wrap; }
+  .legend { display: flex; gap: 12px; margin-bottom: 12px; font-size: 11px; color: var(--text-secondary); flex-wrap: wrap; }
   .legend span { display: flex; align-items: center; gap: 4px; }
-  .swatch { width: 12px; height: 12px; border-radius: 3px; display: inline-block; }
+  .swatch { width: 14px; height: 14px; border-radius: 3px; display: inline-block; border: 0.5px solid var(--border); }
   #grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
-  .dayname { font-size: 12px; color: var(--text-muted); text-align: center; padding: 4px 0; }
+  .dayname { font-size: 11px; color: var(--text-muted); text-align: center; padding: 4px 0; font-weight: 500; }
   .cell {
     aspect-ratio: 1; border-radius: var(--radius); font-size: 13px;
     border: 0.5px solid var(--border); background: transparent;
     color: var(--text); padding: 0; cursor: default;
     position: relative;
     overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
   .cell.has-day { background: var(--day-color); color: var(--day-text); border-color: transparent; cursor: pointer; font-weight: 500; }
   .cell.has-night-only { background: var(--night-color); color: var(--night-text); border-color: transparent; cursor: pointer; font-weight: 500; }
   .cell.has-drill { background: var(--drill-color); color: var(--drill-text); border-color: transparent; cursor: pointer; font-weight: 500; }
+  .cell.has-uav { background: var(--uav-color); color: var(--uav-text); border-color: transparent; cursor: pointer; font-weight: 500; }
+  .cell.has-grs { background: var(--grs-color); color: var(--grs-text); border-color: transparent; cursor: pointer; font-weight: 500; }
   
-  /* Diagonal split for days with both Sentinel pass AND Drill & Drop */
-  .cell.split-day-drill {
-    background: linear-gradient(135deg, var(--day-color) 50%, var(--drill-color) 50%);
-    color: var(--day-text);
-    border-color: transparent;
-    cursor: pointer;
-    font-weight: 500;
-  }
-  .cell.split-night-drill {
-    background: linear-gradient(135deg, var(--night-color) 50%, var(--drill-color) 50%);
-    color: var(--night-text);
-    border-color: transparent;
-    cursor: pointer;
-    font-weight: 500;
-  }
-  /* Small label inside the cell */
+  /* Multi-event cells - diagonal split */
+  .cell.split-day-drill { background: linear-gradient(135deg, var(--day-color) 50%, var(--drill-color) 50%); border-color: transparent; cursor: pointer; font-weight: 500; color: var(--day-text); }
+  .cell.split-night-drill { background: linear-gradient(135deg, var(--night-color) 50%, var(--drill-color) 50%); border-color: transparent; cursor: pointer; font-weight: 500; color: var(--night-text); }
+  .cell.split-day-uav { background: linear-gradient(135deg, var(--day-color) 50%, var(--uav-color) 50%); border-color: transparent; cursor: pointer; font-weight: 500; color: var(--day-text); }
+  .cell.split-night-uav { background: linear-gradient(135deg, var(--night-color) 50%, var(--uav-color) 50%); border-color: transparent; cursor: pointer; font-weight: 500; color: var(--night-text); }
+  .cell.split-day-grs { background: linear-gradient(135deg, var(--day-color) 50%, var(--grs-color) 50%); border-color: transparent; cursor: pointer; font-weight: 500; color: var(--day-text); }
+  .cell.split-night-grs { background: linear-gradient(135deg, var(--night-color) 50%, var(--grs-color) 50%); border-color: transparent; cursor: pointer; font-weight: 500; color: var(--night-text); }
+  .cell.split-drill-uav { background: linear-gradient(135deg, var(--drill-color) 50%, var(--uav-color) 50%); border-color: transparent; cursor: pointer; font-weight: 500; color: var(--drill-text); }
+  .cell.split-drill-grs { background: linear-gradient(135deg, var(--drill-color) 50%, var(--grs-color) 50%); border-color: transparent; cursor: pointer; font-weight: 500; color: var(--drill-text); }
+  .cell.split-uav-grs { background: linear-gradient(135deg, var(--uav-color) 50%, var(--grs-color) 50%); border-color: transparent; cursor: pointer; font-weight: 500; color: var(--uav-text); }
+  
   .cell .badge {
     position: absolute;
     font-size: 6px;
     text-transform: uppercase;
     letter-spacing: 0.3px;
-    opacity: 0.7;
+    opacity: 0.8;
+    font-weight: 700;
   }
-  .cell .badge-drill {
-    bottom: 2px;
-    right: 3px;
-    color: var(--drill-text);
-  }
-  .cell .badge-sentinel {
-    top: 2px;
-    left: 3px;
-  }
+  .cell .badge-drill { bottom: 2px; right: 3px; color: var(--drill-text); }
+  .cell .badge-uav { bottom: 2px; right: 3px; color: var(--uav-text); }
+  .cell .badge-grs { bottom: 2px; right: 3px; color: var(--grs-text); }
   
   .cell.empty { border: none; cursor: default; background: transparent !important; }
+  
   #detail { 
     margin-top: 16px; 
     min-height: 60px; 
@@ -117,20 +121,24 @@
   #detail .row .time { font-weight: 500; color: var(--text); }
   #detail .dot {
     display: inline-block;
-    width: 10px;
-    height: 10px;
+    width: 12px;
+    height: 12px;
     border-radius: 50%;
     flex-shrink: 0;
+    border: 0.5px solid var(--border);
   }
   .dot-sentinel-day { background: var(--day-color); }
   .dot-sentinel-night { background: var(--night-color); }
   .dot-drill { background: var(--drill-color); }
-  footer { margin-top: 32px; font-size: 12px; color: var(--text-muted); border-top: 0.5px solid var(--border); padding-top: 16px; }
+  .dot-uav { background: var(--uav-color); }
+  .dot-grs { background: var(--grs-color); }
+  
+  footer { margin-top: 32px; font-size: 11px; color: var(--text-muted); border-top: 0.5px solid var(--border); padding-top: 16px; text-align: center; }
 </style>
 </head>
 <body>
 
-<h1>🛰️ Sentinel-2 + Drill & Drop Calendar</h1>
+<h1>📅 Field Operations Calendar</h1>
 <p class="subtitle">__LOCATION_LABEL__ &middot; times shown in __LOCAL_TZ__</p>
 <p class="updated">Last updated __GENERATED_AT__ &middot; refreshes automatically every 10 days</p>
 
@@ -141,9 +149,11 @@
 </div>
 
 <div class="legend">
-  <span><span class="swatch" style="background:#1D9E75;"></span>Daytime pass</span>
-  <span><span class="swatch" style="background:#B4B2A9;"></span>Nighttime pass</span>
-  <span><span class="swatch" style="background:#F97316;"></span>Drill & Drop Reading</span>
+  <span><span class="swatch" style="background:#1D9E75;"></span>Sentinel day</span>
+  <span><span class="swatch" style="background:#B4B2A9;"></span>Sentinel night</span>
+  <span><span class="swatch" style="background:#F97316;"></span>Drill &amp; Drop</span>
+  <span><span class="swatch" style="background:#8B5CF6;"></span>UAV Flight</span>
+  <span><span class="swatch" style="background:#EAB308;"></span>GRS Measurement</span>
 </div>
 
 <div id="grid"></div>
@@ -151,7 +161,7 @@
 <div id="detail">Select a highlighted day to see events.</div>
 
 <footer>
-  Sentinel-2 data from CelesTrak &middot; Drill & Drop readings every 2 weeks on Friday
+  Sentinel-2 data from CelesTrak &middot; Drill &amp; Drop every 2 weeks on Friday
 </footer>
 
 <script>
@@ -185,8 +195,32 @@ function pad(n) { return n < 10 ? '0' + n : '' + n; }
 
 function getEventLabel(e) {
   if (e.type === 'drill_drop') return '🔶 Drill & Drop';
+  if (e.type === 'uav_flight') return '✈️ UAV Flight';
+  if (e.type === 'grs_measurement') return '📊 GRS Measurement';
   if (e.type === 'day') return `🛰️ Sentinel-${e.sat} at ${e.time} (daytime)`;
-  return `🛰️ Sentinel-${e.sat} at ${e.time} (nighttime)`;
+  return `🌙 Sentinel-${e.sat} at ${e.time} (nighttime)`;
+}
+
+function getDotClass(type) {
+  if (type === 'drill_drop') return 'dot-drill';
+  if (type === 'uav_flight') return 'dot-uav';
+  if (type === 'grs_measurement') return 'dot-grs';
+  if (type === 'day') return 'dot-sentinel-day';
+  return 'dot-sentinel-night';
+}
+
+function getBadgeText(type) {
+  if (type === 'drill_drop') return 'D&D';
+  if (type === 'uav_flight') return 'UAV';
+  if (type === 'grs_measurement') return 'GRS';
+  return '';
+}
+
+function getBadgeClass(type) {
+  if (type === 'drill_drop') return 'badge-drill';
+  if (type === 'uav_flight') return 'badge-uav';
+  if (type === 'grs_measurement') return 'badge-grs';
+  return '';
 }
 
 function render() {
@@ -226,41 +260,83 @@ function render() {
     const dayEvents = byDate[dateStr] || [];
     const hasSentinel = dayEvents.some(e => e.type === 'day' || e.type === 'night');
     const hasDrill = dayEvents.some(e => e.type === 'drill_drop');
+    const hasUav = dayEvents.some(e => e.type === 'uav_flight');
+    const hasGrs = dayEvents.some(e => e.type === 'grs_measurement');
     
-    if (hasSentinel || hasDrill) {
+    const types = [];
+    if (hasSentinel) {
+      const hasDay = dayEvents.some(e => e.type === 'day');
+      types.push(hasDay ? 'day' : 'night');
+    }
+    if (hasDrill) types.push('drill');
+    if (hasUav) types.push('uav');
+    if (hasGrs) types.push('grs');
+    
+    if (types.length > 0) {
       let cls = '';
-      if (hasSentinel && hasDrill) {
-        // Diagonal split
-        const hasDay = dayEvents.some(e => e.type === 'day');
-        cls = hasDay ? 'split-day-drill' : 'split-night-drill';
-      } else if (hasDrill) {
-        cls = 'has-drill';
-      } else if (hasSentinel) {
-        const hasDay = dayEvents.some(e => e.type === 'day');
-        cls = hasDay ? 'has-day' : 'has-night-only';
-      }
-      cell.className = `cell ${cls}`;
-      cell.style.cursor = 'pointer';
       
-      // Add small badges
-      if (hasSentinel && hasDrill) {
-        // Add "D&D" badge on the orange side
-        const badge = document.createElement('span');
-        badge.className = 'badge badge-drill';
-        badge.textContent = 'D&D';
-        cell.appendChild(badge);
-      } else if (hasDrill) {
-        const badge = document.createElement('span');
-        badge.className = 'badge badge-drill';
-        badge.textContent = 'D&D';
-        cell.appendChild(badge);
+      if (types.length === 1) {
+        // Single event type
+        const t = types[0];
+        if (t === 'day') cls = 'has-day';
+        else if (t === 'night') cls = 'has-night-only';
+        else if (t === 'drill') cls = 'has-drill';
+        else if (t === 'uav') cls = 'has-uav';
+        else if (t === 'grs') cls = 'has-grs';
+      } else if (types.length === 2) {
+        // Diagonal split for two event types
+        const pair = types.join('-');
+        const map = {
+          'day-drill': 'split-day-drill',
+          'night-drill': 'split-night-drill',
+          'day-uav': 'split-day-uav',
+          'night-uav': 'split-night-uav',
+          'day-grs': 'split-day-grs',
+          'night-grs': 'split-night-grs',
+          'drill-uav': 'split-drill-uav',
+          'drill-grs': 'split-drill-grs',
+          'uav-grs': 'split-uav-grs',
+        };
+        cls = map[pair] || '';
+      } else {
+        // 3+ event types - use gradient with multiple colors
+        const colors = [];
+        if (hasSentinel) colors.push(hasSentinel && dayEvents.some(e => e.type === 'day') ? 'var(--day-color)' : 'var(--night-color)');
+        if (hasDrill) colors.push('var(--drill-color)');
+        if (hasUav) colors.push('var(--uav-color)');
+        if (hasGrs) colors.push('var(--grs-color)');
+        cls = `has-${types[0]}`; // fallback
+        // Override with multi-color gradient
+        if (colors.length >= 2) {
+          const angle = 45 + (colors.length - 2) * 15;
+          let gradient = `linear-gradient(${angle}deg, ${colors.join(', ')})`;
+          cell.style.background = gradient;
+          cell.style.borderColor = 'transparent';
+          cell.style.cursor = 'pointer';
+        }
+      }
+      
+      if (cls) {
+        cell.className = `cell ${cls}`;
+        cell.style.cursor = 'pointer';
+        
+        // Add badge for the most "important" event
+        const badgeTypes = ['drill', 'uav', 'grs'];
+        for (const bt of badgeTypes) {
+          if (types.includes(bt)) {
+            const badge = document.createElement('span');
+            badge.className = `badge ${getBadgeClass(bt)}`;
+            badge.textContent = getBadgeText(bt);
+            cell.appendChild(badge);
+            break;
+          }
+        }
       }
       
       cell.addEventListener('click', () => {
         detail.innerHTML = dayEvents.map(e => {
-          const dotColor = e.type === 'drill_drop' ? 'var(--drill-color)' : 
-                           e.type === 'day' ? 'var(--day-color)' : 'var(--night-color)';
-          return `<div class="row"><span class="dot" style="background:${dotColor};"></span> ${getEventLabel(e)}</div>`;
+          const dotClass = getDotClass(e.type);
+          return `<div class="row"><span class="dot ${dotClass}"></span> ${getEventLabel(e)}</div>`;
         }).join('');
       });
     }
