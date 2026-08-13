@@ -33,17 +33,22 @@ def get_special_events():
     """Return a list of special events with dates and types"""
     events = []
     
-    # ---- UAV Flight dates (UPDATED) ----
+    # ---- UAV Flight dates ----
     uav_dates = [
         "2026-08-11",
+        "2026-09-04",
         "2026-09-10",
         "2026-09-30",
+        "2026-11-13",
     ]
     for date_str in uav_dates:
         events.append({"date": date_str, "type": "uav_flight"})
     
     # ---- GRS Measurement: September 30 ----
     events.append({"date": "2026-09-30", "type": "grs_measurement"})
+    
+    # ---- Drill & Drop on Sept 30 (in addition to regular schedule) ----
+    events.append({"date": "2026-09-30", "type": "drill_drop"})
     
     # ---- Date ranges (display as dashed lines) ----------------------------
     
@@ -188,6 +193,13 @@ def main():
     print("\n===== SPECIAL EVENTS =====")
     for event in special_rows:
         print(f"  {event['date']}: {event['type']}")
+    print("==========================\n")
+    
+    # ---- Print Sep 30 check -----------------------------------------------
+    sep30_events = [e for e in all_events if e['date'] == '2026-09-30']
+    print(f"===== SEP 30 EVENTS ({len(sep30_events)}) =====")
+    for e in sep30_events:
+        print(f"  {e}")
     print("==========================\n")
     
     from collections import defaultdict
