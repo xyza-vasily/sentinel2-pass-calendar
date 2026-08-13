@@ -476,16 +476,16 @@ function render() {
       }
     }
     
-    // Point events (Drill, UAV, GRS) - show as colored cells with badges
-    if (hasDrill && !hasSentinel) {
+    // ---- FIX: Point events (Drill, UAV, GRS) - always show, even with Sentinel ----
+    if (hasDrill) {
       cls += ' has-drill';
       isClickable = true;
     }
-    if (hasUav && !hasSentinel) {
+    if (hasUav) {
       cls += ' has-uav';
       isClickable = true;
     }
-    if (hasGrs && !hasSentinel) {
+    if (hasGrs) {
       cls += ' has-grs';
       isClickable = true;
     }
