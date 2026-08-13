@@ -24,6 +24,15 @@ jobs:
         run: |
           pip install skyfield numpy requests
 
+      - name: Debug - show all files
+  run: |
+      echo "Current directory:"
+      pwd
+      echo "All files in root:"
+      ls -la
+      echo "Looking for Python files:"
+      find . -name "*.py" -type f
+    
       - name: Regenerate calendar
         run: python generate_calendar.py
 
